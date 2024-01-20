@@ -54,7 +54,6 @@ class UpdateClub implements ShouldQueue
                        'until' => $data['coach']['contract']['until'] ?? null,
                    ],
                ];
-               dd($competition->id);
                $squad = [];
                foreach ($data['squad'] as $player) {
                    $squad[] = [
@@ -78,9 +77,5 @@ class UpdateClub implements ShouldQueue
                ]);
            }
        }
-    }
-    public function delay()
-    {
-        return now()->addMinutes(2);
     }
 }

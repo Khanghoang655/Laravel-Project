@@ -8,6 +8,7 @@ use App\Models\FootballMatch;
 use App\Models\Order;
 use App\Models\Seat_rows;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VNPayService
 {
@@ -54,14 +55,23 @@ class VNPayService
 
             $orderPaymentMethod->status = 'success';
             $orderPaymentMethod->save();
-            return redirect()->route('home')->with('msg', 'đặt vé thành công');
+            if(Auth::user()->isAdmin()){
+                return redirect()->route('admin.dashboard.Admin')->with('msg', 'đặt vé thành công');
+            }
+            else{
+                return redirect()->route('dashboard.guest')->with('msg', 'đặt vé thành công');
+            }
         } else {
             $order->status = 'cancel';
             $order->save();
             $orderPaymentMethod->status = 'cancel';
             $orderPaymentMethod->save();
-
-            return redirect()->route('home')->with('msg', 'Đặt vé thất bại');
+            if(Auth::user()->isAdmin()){
+                return redirect()->route('admin.dashboard.Admin')->with('msg', 'Đặt vé thất bại');
+            }
+            else{
+                return redirect()->route('dashboard.guest')->with('msg', 'Đặt vé thất bại');
+            }
         }
     }
 

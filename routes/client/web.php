@@ -3,21 +3,22 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\client\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController\client;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Service\VNPayService;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+// Route::middleware([
+//     'auth:sanctum',
+//     config('jetstream.auth_session'),
+//     'verified',
+// ])->group(function () {
+//     Route::get('/dashboard', function () {
+//         return view('admin.dashboard.guest_dashboard');
+//     })->name('dashboard');
+// });
 Route::get('/', function () {
     return view('client.index');
 })->name('home');
@@ -44,3 +45,6 @@ Route::get('/competition-detail/{id}', [HomeController::class, 'competitionDetai
 Route::get('/matchSeat/{id}', [HomeController::class, 'matchSeat'])->name('matches.seat');
 Route::get('/seat-plan/{id}', [HomeController::class, 'seatPlan'])->name('seat.plan');
 Route::get('login', [HomeController::class, 'create'])->name('login');
+Route::get('/dashboard-guest', [DashboardController::class, 'index'])->name('dashboard.guest');
+Route::post('/potential', [HomeController::class, 'potential'])->name('potential');
+

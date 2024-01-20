@@ -17,26 +17,34 @@
                         <h3 class="title">{{ $match->home_team }} - {{ $match->away_team }}</h3>
                     </div>
                     <div class="right">
-                        <ul class="countdown">
-                            <li>
-                                <h2><span id="days">00</span></h2>
-                                <p class="days_text">days</p>
-                            </li>
-                            <li>
-                                <h2><span id="hours">00</span></h2>
-                                <p class="hours_text">hrs</p>
-                            </li>
-                            <li>
-                                <h2><span id="minutes">00</span></h2>
-                                <p class="minu_text">min</p>
-                            </li>
-                            <li>
-                                <h2><span id="seconds">00</span></h2>
-                                <p class="seco_text">sec</p>
-                            </li>
-                        </ul>
-
-                        <a href="{{ route('seat.plan', ['id' => $match->match_id]) }}" class="custom-button">book tickets</a>
+                        @php
+                            $current_time = now()->setTimezone('Asia/Ho_Chi_Minh');
+                            $new_time = $current_time->addMinutes(30);
+                        @endphp
+                        @if ($match->date_time > $new_time)
+                            <ul class="countdown">
+                                <li>
+                                    <h2><span id="days">00</span></h2>
+                                    <p class="days_text">days</p>
+                                </li>
+                                <li>
+                                    <h2><span id="hours">00</span></h2>
+                                    <p class="hours_text">hrs</p>
+                                </li>
+                                <li>
+                                    <h2><span id="minutes">00</span></h2>
+                                    <p class="minu_text">min</p>
+                                </li>
+                                <li>
+                                    <h2><span id="seconds">00</span></h2>
+                                    <p class="seco_text">sec</p>
+                                </li>
+                            </ul>
+                            <a href="{{ route('seat.plan', ['id' => $match->match_id]) }}" class="custom-button">book
+                                tickets</a>
+                        @else
+                            <p>Match end</p>
+                        @endif
                     </div>
                 </div>
                 <div class="event-search-bottom">
@@ -71,28 +79,7 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <ul class="social-icons">
-                    <li>
-                        <a href="{{ url("#") }}">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url("#") }}" class>
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url("#") }}" class="active">
-                            <i class="fab fa-pinterest-p"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url("#") }}">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </li>
-                </ul> --}}
+
                 </div>
             </div>
         </div>
@@ -132,7 +119,7 @@
                                 Internet. It uses a dictionary of over 200
                                 Latin words.
                             </p>
-                            <a href="{{  route('seat.plan', ['id' => $match->match_id]) }}" class="custom-button">book
+                            <a href="{{ route('seat.plan', ['id' => $match->match_id]) }}" class="custom-button">book
                                 tickets</a>
                         </div>
                     </div>
@@ -210,31 +197,34 @@
             </div>
             <div class="speaker--slider">
                 <div class="speaker-slider owl-carousel owl-theme">
-                    @foreach ($matches as $match)
+                    @php
+                        $printedMatches = []; // Mảng để theo dõi các trận đấu đã được in
+                    @endphp
+                    @foreach ($matches as $data)
                         @php
-                            $matchDateTime = \Carbon\Carbon::parse($match->date_time);
-
-                            $isMatchInFuture = $matchDateTime->subMinutes(30)->isFuture();
-                            $image = $match->competitions->emblem;
+                            $image = $data->competitions->emblem;
                         @endphp
-                        @if ($isMatchInFuture)
-                            {{-- Hiển thị nội dung cho các trận đấu trong tương lai --}}
+                        @if ($data->date_time > $new_time && !in_array($data->match_id, $printedMatches))
+                            @php
+                                $printedMatches[] = $data->match_id;
+                            @endphp
                             <div class="speaker-item">
                                 <div class="speaker-thumb">
-                                    <a href="{{route('matches.seat', ['id' =>$match->match_id]) }}">
+                                    <a href="{{ route('matches.seat', ['id' => $data->match_id]) }}">
                                         <img src="{{ $image }}" alt="speaker">
                                     </a>
                                 </div>
                                 <div class="speaker-content">
                                     <h5 class="title">
-                                        <a href="{{route('matches.seat', ['id' =>$match->match_id]) }}">
-                                            {{ $match->home_team }} - {{ $match->away_team }}
+                                        <a href="{{ route('matches.seat', ['id' => $data->match_id]) }}">
+                                            {{ $data->home_team }} - {{ $data->away_team }}
                                         </a>
                                     </h5>
                                 </div>
                             </div>
                         @endif
                     @endforeach
+
                 </div>
                 <div class="speaker-prev">
                     <i class="fal fa-long-arrow-alt-right"></i>
@@ -286,39 +276,39 @@
             </div> --}}
         </div>
     </section>
-    <script>
-        // Lấy thời gian hiện tại
-        var now = new Date().getTime();
+    @if ($match->date_time > $new_time)
+        <script>
+            var now = new Date().getTime();
+            // Chuyển đổi chuỗi thời gian thành đối tượng JavaScript Date
+            var countDownDate = new Date("{{ $match->date_time }}").getTime() - 30 * 60 * 1000;
 
-        // Chuyển đổi chuỗi thời gian thành đối tượng JavaScript Date
-        var countDownDate = new Date("{{ $match->date_time }}").getTime() - 30 * 60 * 1000;
+            // Cập nhật thời gian mỗi 1 giây
+            var x = setInterval(function() {
+                // Lấy thời gian hiện tại
+                var current = new Date().getTime();
 
-        // Cập nhật thời gian mỗi 1 giây
-        var x = setInterval(function() {
-            // Lấy thời gian hiện tại
-            var current = new Date().getTime();
+                // Tính thời gian còn lại
+                var distance = countDownDate - current;
 
-            // Tính thời gian còn lại
-            var distance = countDownDate - current;
+                // Tính toán các giá trị ngày, giờ, phút, giây
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Tính toán các giá trị ngày, giờ, phút, giây
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                // Hiển thị giá trị lên giao diện người dùng
+                document.getElementById("days").innerHTML = days;
+                document.getElementById("hours").innerHTML = hours;
+                document.getElementById("minutes").innerHTML = minutes;
+                document.getElementById("seconds").innerHTML = seconds;
 
-            // Hiển thị giá trị lên giao diện người dùng
-            document.getElementById("days").innerHTML = days;
-            document.getElementById("hours").innerHTML = hours;
-            document.getElementById("minutes").innerHTML = minutes;
-            document.getElementById("seconds").innerHTML = seconds;
-
-            // Kiểm tra xem thời gian đã hết hay chưa
-            if (distance < 0) {
-                clearInterval(x);
-                // Hiển thị thông báo khi thời gian kết thúc
-                document.getElementById("countdown").innerHTML = "EXPIRED";
-            }
-        }, 1000);
-    </script>
+                // Kiểm tra xem thời gian đã hết hay chưa
+                if (distance < 0) {
+                    clearInterval(x);
+                    // Hiển thị thông báo khi thời gian kết thúc
+                    document.getElementById("countdown").innerHTML = "EXPIRED";
+                }
+            }, 1000);
+        </script>
+    @endif
 @endsection

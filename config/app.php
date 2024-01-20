@@ -1,5 +1,6 @@
 <?php
 
+use App\Providers\ViewComposerServiceProvider;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
@@ -171,6 +172,7 @@ return [
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
         App\Providers\MyRoutesServiceProvider::class,
+        ViewComposerServiceProvider::class,
     ])->toArray(),
 
     /*

@@ -50,10 +50,11 @@
                 <li>
                     <li class="header-button pr-0">
                         @auth
-                            @if (1 > 0)
+                            @if (auth()->user() &&
+                                    auth()->user()->isAdmin())
                                 <a href="{{ route('admin.dashboard.Admin') }}">Dashboard</a>
                             @else
-                                <a href="{{ route('dashboard') }}">User Dashboard</a>
+                                <a href="{{ route('dashboard.guest') }}">User Dashboard</a>
                             @endif
                         @else
                             <a href="{{ route('login') }}">Join Us</a>

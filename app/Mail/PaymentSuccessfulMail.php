@@ -39,18 +39,23 @@ class PaymentSuccessfulMail extends Mailable
     }
     public function build()
     {
-        $orders = Order::where('user_id', Auth::user()->id)->with('order_items')->get();
-        $orderItems = [];
+        // $orders = Order::where('user_id', Auth::user()->id)->with('order_items')->get();
+        // $orderItems = [];
+        // dd($this->order);
 
-        foreach ($orders as $order) {
-            foreach ($order->order_items as $orderItem) {
-                $orderItems[] = $orderItem->match_id;
-            }
-        }
 
-        $match = FootballMatch::whereIn('id', $orderItems)->get();
+        // Lấy các id của các đơn đặt hàng từ $this->order
+        $orderIds = $this->order->pluck('id')->toArray();
 
-        $orderItem = OrderItem::whereIn('order_id', $orders->pluck('id'))->get();
-        return $this->view('mail.paymentSuccessfulMail', ['order' => $this->order, 'match' => $match, 'orderItem' => $orderItem]);
+        // Lấy các OrderItem liên quan đến các đơn đặt hàng
+        $orderItems = OrderItem::whereIn('order_id', $orderIds)->get();
+
+        // Lấy các id của các trận đấu từ các OrderItem
+        $matchIds = $orderItems->pluck('match_id')->toArray();
+
+        // Lấy các trận đấu liên quan đến các id đã lấy
+        $matches = FootballMatch::whereIn('id', $matchIds)->get();
+
+        return $this->view('mail.paymentSuccessfulMail', ['order' => $this->order, 'match' => $matches]);
     }
 }

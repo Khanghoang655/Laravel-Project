@@ -47,7 +47,7 @@
                             class="icon-home"></i>Dashboard</a></li>
                 <li><a href="{{ route('admin.update-matches') }}"><i class="icon-database"></i>Matches</a></li>
                 <li><a href="{{ route('admin.update-competition') }}"><i class="icon-bag2"></i>Competitions</a></li>
-                {{-- <li><a href="{{ route('admin.dashboard.customers') }}"><i class="icon-users2"></i>Customers</a></li> --}}
+                <li><a href="{{ route('admin.dashboard.customers') }}"><i class="icon-users2"></i>Customers</a></li>
                 {{-- <li><a href="{{ route('admin.dashboard.match.controller') }}"><i class="icon-cog"></i>Settings --}}
                         Match</a></li>
                 <li><a href="{{ route('admin.seat.index') }}"><i class="icon-papers"></i>Seat</a></li>
@@ -83,9 +83,9 @@
                             </li>
                             <li><a href="{{ route('admin.update-competition') }}"><i
                                         class="icon-bag2"></i>Competitions</a></li>
-                            {{-- <li><a href="{{ route('admin.dashboard.customers') }}"><i
+                            <li><a href="{{ route('admin.dashboard.customers') }}"><i
                                         class="icon-users2"></i>Customers</a></li>
-                            <li><a href="{{ route('admin.dashboard.match.controller') }}"><i
+                            {{-- <li><a href="{{ route('admin.dashboard.match.controller') }}"><i
                                         class="icon-cog"></i>Settings Match</a></li> --}}
                             <li><a href="{{ route('admin.seat.index') }}"><i class="icon-papers"></i>Seat</a></li>
                         </ul>

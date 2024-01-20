@@ -18,15 +18,14 @@
     <link rel="stylesheet" href="{{ asset('css/jquery.animatedheadline.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fontawesome.min.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css"> --}}
 
     <!-- Scripts -->
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.bundle.min.js"></script> --}}
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('js/modernizr-3.6.0.min.js') }}"></script>
     <script src="{{ asset('js/plugins.js') }}"></script>
@@ -72,7 +71,7 @@
                 <a href="{{ route('admin.dashboard.Admin') }}" class="btn btn-primary btn-lg mx-3">Dashboard</a>
                 <a href="{{ route('home') }}" class="btn btn-primary btn-lg mx-3">Home</a>
             @else
-                <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg mx-3">User Dashboard</a>
+                <a href="{{ route('da') }}" class="btn btn-primary btn-lg mx-3">User Dashboard</a>
             @endif
         @else
             <a href="{{ route('login') }}" class="btn btn-primary btn-lg mx-3">Join Us</a>

@@ -12,10 +12,13 @@ use App\Jobs\UpdateSeatJob;
 use App\Models\Club;
 use App\Models\Competition;
 use App\Models\FootballMatch;
+use App\Models\Potential;
+use App\Models\PotentialCustomer;
 use App\Models\Seat_rows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Constraint\IsEmpty;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +41,7 @@ class HomeController extends Controller
     {
         $matches = FootballMatch::all();
         $competitions = Competition::all();
-
+        $clubs = Club::all();
         // Kiểm tra và dispatch job cập nhật competition nếu không có competition
         if ($competitions->isEmpty()) {
             UpdateCompetitionJob::dispatch()->onQueue('high');
@@ -51,11 +54,15 @@ class HomeController extends Controller
         if ($matches->where('seat', '=', 0)->isNotEmpty()) {
             UpdateSeatJob::dispatch()->onQueue('high');
         }
+        $countClubs = $clubs->count();
 
-        DB::transaction(function () use ($competitions) {
-            UpdateClub::dispatch()->onQueue('low')->delay(now()->addMinutes(5));
+        // if ($countClubs<200) {
+        //     UpdateClub::dispatch();
+        // }
+        // else{
+        //     UpdateClub::dispatch()->onQueue('low')->delay(now()->addMinutes(10));
 
-        });
+        // }
         return view('client.index', [
             'matches' => $matches,
             'competitions' => $competitions
@@ -188,6 +195,22 @@ class HomeController extends Controller
         return view('client.checkout.checkout')->with('seats', $seats)->with('totalPrice', $totalPrice)->with('seat_row', $temp);
     }
 
-
+    public function potential(Request $request)
+    {
+        $rules = [
+            'email' => 'required|email',
+        ];
+        // Validate the request data
+        $validator = Validator::make($request->all(), $rules);
+        PotentialCustomer::updateOrCreate(
+            [
+                'email' => $request->email,
+            ],
+            [
+                'email' => $request->email,
+            ]
+        );
+        return redirect()->back()->with('msg', 'Chúng tôi sẽ thông báo khi có sự kiện');
+    }
 
 }

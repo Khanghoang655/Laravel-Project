@@ -92,11 +92,16 @@ class MatchController extends Controller
         }
         $competitions = FootballMatch::distinct('competition_name')->pluck('competition_name');
 
+        $currentTimeUTC = now();
+
+        // Chuyển đổi thời gian về theo múi giờ Việt Nam
+        $currentTimeVietnam = $currentTimeUTC->setTimezone('Asia/Ho_Chi_Minh');
+
         $query = ($selectedCompetition !== 'all')
             ? FootballMatch::where('competition_id', $competitionId->id)->withTrashed()
             : FootballMatch::withTrashed();
         if ($notPlayedChecked) {
-            $query->where('date_time', '>=', now());
+            $query->where('date_time', '>=', $currentTimeVietnam);
         }
         $filteredMatches = $query->paginate(10);
 

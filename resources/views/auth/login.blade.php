@@ -33,7 +33,12 @@
                                 {{ session('status') }}
                             </div>
                         @endif
-
+                        @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{session('msg')}}
+                            {{ session('error') }}
+                        </div>
+                    @endif
                         <form class="account-form" method="POST" action="{{ route('login') }}">
                             @csrf
 
@@ -64,23 +69,7 @@
 
                         <div class="or"><span>Or</span></div>
 
-                        <ul class="social-icons">
-                            <li>
-                                <a href="#">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="fab fa-google"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                            </li>
-                        </ul>
+                        
                     </div>
                 </div>
             </div>

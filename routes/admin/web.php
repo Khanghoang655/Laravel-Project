@@ -34,10 +34,11 @@ Route::prefix('admin')->middleware('check.is.admin')->name('admin.')->group(func
     Route::get('club/index',[ClubController::class,'index'])->name('club.index');
     Route::match(['get', 'post'],'club/index/filter/{competitionId?}', [ClubController::class, 'filter'])->name('club.filter');
     Route::get('/dashboard/admin', [DashboardController::class, 'indexAdmin'])->name('dashboard.Admin');
+    Route::get('/dashboard/customers', [DashboardController::class, 'customers'])->name('dashboard.customers');
+    Route::post('/dashboard/role/{id}', [DashboardController::class, 'role'])->name('dashboard.role');
     
 
 });
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
  

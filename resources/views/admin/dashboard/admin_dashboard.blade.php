@@ -89,7 +89,6 @@
                                                 <td><span class="ps-fullfillment success">{{ $order->status }}</span>
                                                 </td>
                                                 <td><strong>${{ $order->total }}</strong></td>
-                                               
                                             </tr>
                                         @endforeach
                                     </tbody>

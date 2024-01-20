@@ -18,8 +18,13 @@ class SeatController extends Controller
 
     public function store(Request $request)
     {
+        $seat_rows = Seat_rows::where('match_id', $request->match_id)->where('name', $request->name)->first();
+        $matchId = (int) $request->match_id;
+        $footballMatch = FootballMatch::where('id', $matchId)->withTrashed()->first();
+        if ($footballMatch->seats_remaining > 0 && $seat_rows !== null && $seat_rows->name === $request->name) {
+            return redirect()->route('admin.seat.index')->with('msg', "Ghế này đã được bán hoặc không tồn tại, không thể cập nhật.");
+        }
 
-        // Validate input data
         $request->validate([
             'seat_number' => 'required|numeric|min:10|max:1000|integer',
             'price' => 'required|numeric|min:100|integer',
@@ -92,10 +97,9 @@ class SeatController extends Controller
                 'msg' => "Xóa thành công",
             ]);
         } else {
-            return redirect()->route('admin.seat.index')->with('msg', "Bạn không thể xóa ghế này ");
+            return redirect()->route('admin.seat.index')->with('msg', "Bạn không thể xóa ghế này hoặc cập nhật lại số lượng ghế");
         }
 
-        // return redirect()->route('admin.seat.index')->with('msg', "Seat not found");
     }
     protected function calculateRemainingSeats($matchId)
     {

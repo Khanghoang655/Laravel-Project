@@ -220,9 +220,7 @@
                         <div class="ticket__timing">
                             <p>
                                 <span class="u-upper ticket__small-label">Seat Row</span>
-                                @foreach ($orderItem as $data)
-                                <span class="ticket__detail">{{$data->seat_name}}</span>
-                                @endforeach
+                                <span class="ticket__detail">{{$order->seat_name}}</span>
                             </p>
                         </div>
                         <p class="ticket__fine-print">This ticket cannot be transferred to another voyage</p>

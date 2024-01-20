@@ -43,7 +43,7 @@
                                         $new_time = $current_time->addMinutes(30);
                                     @endphp
                                     @if ($match->date_time > $new_time)
-                                        <option value="{{ $match->id }}">{{ $match->home_team }} vs
+                                        <option value={{ $match->id }}>{{ $match->home_team }} vs
                                             {{ $match->away_team }}</option>
                                     @endif
                                 @empty

@@ -6,14 +6,6 @@
         <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
-
-                @if (session('msg'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('msg') }}
-                    </div>
-                @endif
-
-
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
@@ -76,10 +68,10 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $match->match_id }}</td>
                                                 <td>
-                                                    {{ $match->home_team }} <img class="team-emblem"
+                                                    {{ $match->home_team }} <img class="team-emblem" style="width: 3em"
                                                         src="{{ $match->emblem_home }}" alt="">
                                                     vs
-                                                    {{ $match->away_team }} <img class="team-emblem"
+                                                    {{ $match->away_team }} <img class="team-emblem" style="width: 3em"
                                                         src="{{ $match->emblem_away }}" alt="">
                                                 </td>
                                                 <td>

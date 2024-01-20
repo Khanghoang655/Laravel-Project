@@ -130,28 +130,18 @@
                                                 <h5 class="title m-0">
                                                     <a href="{{ route('matches.seat', ['id' => $match->match_id]) }}">{{ $match->home_team }}
                                                         - {{ $match->away_team }}</a>
-
                                                 </h5>
+                                                <span>{{ $match->date_time }}</span>
                                                 @php
-                                                    $matchTime = \Carbon\Carbon::parse($match->date_time, 'Asia/Ho_Chi_Minh');
-                                                @endphp
-                                                <span>{{ $matchTime }}</span>
-                                                @php
-                                                    // Lấy thời gian hiện tại theo múi giờ Việt Nam
-                                                    $currentTime = now('Asia/Ho_Chi_Minh');
-                                                    $timeRemaining = $currentTime->diff($matchTime->subMinutes(30));
 
-                                                    // Kiểm tra xem thời gian còn lại có làm âm hay không
-                                                    $isPastMatch = $timeRemaining->invert == 1;
+                                                    $current_time = now()->setTimezone('Asia/Ho_Chi_Minh');
+                                                    $new_time = $current_time->addMinutes(30);
                                                 @endphp
-
-                                                @if ($isPastMatch)
-                                                    {{-- Hiển thị thông báo cho việc bán đóng --}}
+                                                @if ($match->date_time < $new_time)
                                                     <div class="closed-sales">
                                                         <p>đóng cửa</p>
                                                     </div>
                                                 @else
-                                                    {{-- Hiển thị thời gian còn lại --}}
                                                     <div class="time-remaining" id="countdown">
 
                                                     </div>

@@ -18,7 +18,6 @@ class DashboardController extends Controller
             $orderItems = [];
 
             $orders = Order::where('user_id', Auth::user()->id)->with('order_items')->get();
-            // $orderItem = OrderItem::
             foreach ($orders as $order) {
                 foreach ($order->order_items as $orderItem) {
                     $orderItems[] = $orderItem->match_id;
@@ -113,7 +112,8 @@ class DashboardController extends Controller
     public function customers(Request $request)
     {
         $totalFilter = $request->input('total_filter', 'asc'); // Giá trị mặc định là 'asc'
-        $users = User::get();
+
+        $users = User::withTrashed()->get();
         $userCounts = [];
 
         foreach ($users as $user) {
@@ -149,14 +149,39 @@ class DashboardController extends Controller
 
         return view('admin.dashboard.customers')->with([
             'customers' => $usersPaginated,
+            'usersPaginated' => $usersPaginated,
             'userCounts' => $userCounts,
             'totalFilter' => $totalFilter,
         ]);
     }
 
-    public function matchController(){
-        $matches=FootballMatch::paginate(5);
-        return view('admin.dashboard.match_controller',["matches"=>$matches]);
+
+    public function matchController()
+    {
+        $matches = FootballMatch::paginate(5);
+        return view('admin.dashboard.match_controller', ["matches" => $matches]);
+    }
+    public function role(Request $request, $id)
+    {
+        $user = User::withTrashed()->find($id);
+
+        if (!$user) {
+            return back()->with('error', 'Người dùng không tồn tại');
+        }
+
+        $action = $request->input('action');
+
+        if ($action == 'set_admin') {
+            $user->update(['is_admin' => 1]);
+            if ($user->trashed()) {
+                $user->restore();
+            }
+            return back()->with('success', 'Chọn quản trị viên thành công');
+        } elseif ($action == 'delete') {
+            $user->update(['is_admin' => 0]);
+            $user->delete();
+            return back()->with('success', 'Đã xóa người dùng thành công');
+        }
     }
 
 }
