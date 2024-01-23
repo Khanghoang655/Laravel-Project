@@ -111,6 +111,7 @@ class VNPayService
         }
 
         ksort($inputData);
+
         $query = "";
         $i = 0;
         $hashdata = "";
@@ -122,6 +123,7 @@ class VNPayService
                 $hashdata .= urlencode($key) . "=" . urlencode($value);
                 $i = 1;
             }
+
             $query .= urlencode($key) . "=" . urlencode($value) . '&';
         }
 

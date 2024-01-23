@@ -29,22 +29,19 @@ class UpdateSeatJob implements ShouldQueue
     public function handle(): void
     {
         $footballMatches = FootballMatch::get();
-        $seat_name = [
-            'available' => [],
-            'unavailable' => [],
-        ];
+       
 
         foreach ($footballMatches as $footballMatch) {
-            if ($footballMatch->seat <= 0) {
-                foreach (range('A', 'Z') as $letter) {
-                    $seatNumbers = range(1, request('seat_number') ?? 25);
-                    foreach ($seatNumbers as $number) {
-                        $seat_name['available'][] = $letter . $number;
-                    }
+            $seat_name = [
+                'available' => [],
+                'unavailable' => [],
+            ];
+            if ($footballMatch->seat == 0) {
+                $seatNumbers = range(1, request('seat_number') ?? 100);
+                foreach ($seatNumbers as $number) {
+                    $seat_name['available'][] = 'A'.$number;
                 }
-
                 $seat_name_json = json_encode($seat_name);
-
                 try {
                     $seatRow = Seat_rows::updateOrCreate(
                         ['name' => request('name') ?? 'A', 'match_id' => $footballMatch->id],
@@ -54,12 +51,11 @@ class UpdateSeatJob implements ShouldQueue
                             'seat_name' => $seat_name_json,
                         ]
                     );
-
                     $seat = Seat::updateOrCreate([
                         'seat_row_id' => $seatRow->id,
                     ], [
                         'seat_row_id' => $seatRow->id,
-                        'seat_number' => request('seat_number') ?? 25,
+                        'seat_number' => request('seat_number') ?? 100,
                         'seat_price' => is_numeric(request('price')) ? round(request('price')) : 100,
                         'match_id' => $footballMatch->id,
                     ]);

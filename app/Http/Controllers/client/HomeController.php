@@ -42,7 +42,6 @@ class HomeController extends Controller
         $matches = FootballMatch::all();
         $competitions = Competition::all();
         $clubs = Club::all();
-        // Kiểm tra và dispatch job cập nhật competition nếu không có competition
         if ($competitions->isEmpty()) {
             UpdateCompetitionJob::dispatch()->onQueue('high');
         }
@@ -50,19 +49,14 @@ class HomeController extends Controller
         // Dispatch job cập nhật match cho mỗi competition
         UpdateMatchJob::dispatch()->onQueue('high');
 
-        // Kiểm tra và dispatch job cập nhật seat nếu có match có seat khác 0
-        if ($matches->where('seat', '=', 0)->isNotEmpty()) {
+        if ($matches->where('seat', '==', 0)->isNotEmpty()) {
             UpdateSeatJob::dispatch()->onQueue('high');
         }
-        $countClubs = $clubs->count();
-
-        // if ($countClubs<200) {
-        //     UpdateClub::dispatch();
-        // }
-        // else{
+        // $countClubs = $clubs->count();
+        // if ($countClubs<100) {
         //     UpdateClub::dispatch()->onQueue('low')->delay(now()->addMinutes(10));
-
         // }
+     
         return view('client.index', [
             'matches' => $matches,
             'competitions' => $competitions

@@ -46,5 +46,6 @@ Route::get('/matchSeat/{id}', [HomeController::class, 'matchSeat'])->name('match
 Route::get('/seat-plan/{id}', [HomeController::class, 'seatPlan'])->name('seat.plan');
 Route::get('login', [HomeController::class, 'create'])->name('login');
 Route::get('/dashboard-guest', [DashboardController::class, 'index'])->name('dashboard.guest');
+Route::post('/order-guest/{id}', [DashboardController::class, 'orderGuest'])->name('order.guest');
 Route::post('/potential', [HomeController::class, 'potential'])->name('potential');
 

@@ -47,7 +47,14 @@
                                     <div class="ps-card__chart">
                                         <div id="donut-chart"></div>
                                         <div class="ps-card__information"><i
-                                                class="icon icon-wallet"></i><strong>{{ $totalSuccess + $totalUnSuccess }}$</strong><small>Balance</small>
+                                                class="icon icon-wallet"></i><strong>{{ $totalSuccess + $totalUnSuccess }}$</strong>
+                                                <small>
+                                                    @if ($totalSuccess > $totalUnSuccess)
+                                                        Good
+                                                    @else
+                                                        Bad
+                                                    @endif
+                                                </small>
                                         </div>
                                     </div>
                                     <div class="ps-card__status">

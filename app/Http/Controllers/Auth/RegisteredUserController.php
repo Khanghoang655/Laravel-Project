@@ -34,9 +34,12 @@ class RegisteredUserController extends Controller
     public function sendVerificationEmail(Request $request)
     {
         $email = $request->input('email');
+        if ($request->has('last_email_timestamp')) {
+            $lastEmailTimestamp = $request->session()->get('last_email_timestamp', 0);
+        } else {
+            $lastEmailTimestamp = 0;
+        }
 
-        // Check if there's a previous timestamp stored in the session
-        $lastEmailTimestamp = $request->session()->get('last_email_timestamp', 0);
 
         // Check if enough time has passed since the last email was sent
         $currentTime = now()->timestamp;
@@ -63,14 +66,14 @@ class RegisteredUserController extends Controller
         $request->session()->put('last_email_timestamp', $currentTime);
         $request->session()->put('email', $email);
         $request->session()->put('verification_code', $verificationCode);
-
+        // dd(session()->get('last_email_timestamp', 0));
         return back()->with('success', 'Verification email sent successfully!');
     }
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            // 'email' => ['string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'verification_code' => ['required', 'digits:5'],
         ]);
@@ -79,17 +82,16 @@ class RegisteredUserController extends Controller
         $storedEmail = $request->session()->get('email');
         $verificationCode = $request->session()->get('verification_code');
 
-        if ( $verificationCode !== $request->verification_code) {
+        if ($verificationCode !== $request->verification_code) {
             // If the session data does not match the request data
             return back()->withErrors(['verification_code' => 'Invalid verification code.']);
         }
 
         // Clear the session after successful verification
-        $request->session()->forget('email');
-        $request->session()->forget('verification_code');
+
 
         // Check if the user already exists with the provided email
-        $existingUser = User::where('email', $request->email)->first();
+        $existingUser = User::where('email', session()->get('email'))->first();
         if ($existingUser) {
             // User with this email already exists
             return back()->withErrors(['email' => 'This email is already in use.']);
@@ -100,16 +102,18 @@ class RegisteredUserController extends Controller
             // Create a new user
             $user = User::create([
                 'name' => $request->name,
-                'email' => $request->email,
+                'email' => session()->get('email'),
                 'password' => Hash::make($request->password),
                 'is_admin' => $request->is_admin ?? false,
                 'email_verified_at' => now(),
             ]);
-
+            $request->session()->forget('email');
+            $request->session()->forget('verification_code');
             event(new Registered($user));
         }
 
         Auth::login($user);
+        $request->session()->put('last_email_timestamp', 0);
 
         return redirect(RouteServiceProvider::HOME);
     }

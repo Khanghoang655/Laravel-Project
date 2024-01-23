@@ -30,9 +30,10 @@
                             onsubmit="return sendVerificationEmail()">
                             @csrf
                             <div class="mt-4 row">
-                                <div class="col-12">
+                                <div class="col-12" id="emailVerificationField">
                                     <x-label for="email" value="{{ __('Email') }}" />
-                                    <x-input class="form-control" type="email" name="email" required  />
+                                    <x-input class="form-control" type="email" name="email" id="verificationEmail"
+                                        required />
                                 </div>
                                 <div class="col-12">
                                     <x-button id="sendVerificationButton" class="btn btn-sm btn-primary">
@@ -57,13 +58,9 @@
                         <div class="mt-4">
                             <x-label for="name" value="{{ __('Name') }}" />
                             <x-input id="name" class="block mt-1 w-full" type="text" name="name"
-                                :value="old('name')" required  />
+                                :value="old('name')" required />
                         </div>
-                        <div class="mt-4" style="display: none">
-                            <x-label for="email" value="{{ __('Email') }}" />
-                            <x-input id="email" class="block mt-1 w-full" type="email" name="email"
-                                :value="session('email', '')" required />
-                        </div>
+                        
                         <div class="mt-4">
                             <x-label for="verification_code" value="{{ __('Verification Code') }}" />
                             <x-input id="verification_code" class="block mt-1 w-full" type="text"
@@ -71,13 +68,12 @@
                         </div>
                         <div class="mt-4">
                             <x-label for="password" value="{{ __('Password') }}" />
-                            <x-input id="password" class="block mt-1 w-full" type="password" name="password" required
-                                />
+                            <x-input id="password" class="block mt-1 w-full" type="password" name="password" required />
                         </div>
                         <div class="mt-4">
                             <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
                             <x-input id="password_confirmation" class="block mt-1 w-full" type="password"
-                                name="password_confirmation" required  />
+                                name="password_confirmation" required />
                         </div>
                         <div class="flex items-center justify-end mt-4">
                             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -94,20 +90,27 @@
         </div>
     </section>
     <script>
-        function countdown() {
-            countdownDisplay.textContent--;
-            if (countdownDisplay.textContent <= 0) {
-                clearInterval(cooldownInterval);
-                localStorage.removeItem('verificationCodeCooldown');
-                sendVerificationButton.disabled = false;
-                cooldownMessage.style.display = 'none';
-            }
+        function startCountdown(seconds = 60) {
+            const countdownDisplay = document.getElementById('countdownDisplay');
+            const sendVerificationButton = document.getElementById('sendVerificationButton');
+            const cooldownMessage = document.getElementById('cooldownMessage');
+
+            countdownDisplay.textContent = seconds;
+            sendVerificationButton.disabled = true;
+            cooldownMessage.style.display = 'block';
+
+            const intervalId = setInterval(() => {
+                seconds--;
+                countdownDisplay.textContent = seconds;
+
+                if (seconds <= 0) {
+                    clearInterval(intervalId);
+                    localStorage.removeItem('verificationCodeCooldown');
+                    sendVerificationButton.disabled = false;
+                    cooldownMessage.style.display = 'none';
+                }
+            }, 1000);
         }
-
-        var cooldownInterval = setInterval(countdown, 1000);
-
-        // Gọi hàm countdown() sau khi thiết lập interval
-        countdown();
 
         function sendVerificationEmail() {
             var form = document.getElementById('emailVerificationForm');
@@ -117,26 +120,25 @@
                 alert('Vui lòng nhập email.');
                 return false;
             }
+            document.getElementById('emailVerificationField').style.display = 'block';
 
+            // Đặt giá trị vào trường email
+            document.getElementById('verificationEmail').value = userEmail;
             var cooldown = localStorage.getItem('verificationCodeCooldown');
-
             if (cooldown) {
-                cooldownMessage.style.display = 'block';
-                sendVerificationButton.disabled = true;
-
-                var countdownDisplay = document.getElementById('countdownDisplay');
-                var cooldownInterval = setInterval(function() {
-                    countdown();
-                }, 1000);
-
-                return false;
+                const remainingSeconds = parseInt(cooldown) - Math.floor(Date.now() / 1000);
+                if (remainingSeconds > 0) {
+                    startCountdown(remainingSeconds);
+                    return false;
+                } else {
+                    localStorage.removeItem('verificationCodeCooldown');
+                }
             }
 
             axios.post('/send-verification-email', {
                     email: userEmail
                 })
                 .then(response => {
-                    console.log(response.data.status);
 
                     // Lưu timestamp hiện tại vào localStorage
                     var currentTimestamp = Math.floor(Date.now() / 1000);

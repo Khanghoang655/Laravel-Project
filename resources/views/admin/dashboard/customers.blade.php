@@ -111,8 +111,6 @@
                                                             value="set_admin">Phân vai trò Admin</button>
                                                         <button type="submit" class="dropdown-item" name="action"
                                                             value="delete">Xóa</button>
-                                                       
-
                                                     </div>
                                                 </div>
                                             </form>

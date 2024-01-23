@@ -18,14 +18,13 @@ class FootballMatchFactory extends Factory
     public function definition(): array
     {
         // Retrieve competition data for competition with ID 4
-        $competitionData = Competition::whereIn('id', [4, 3])->first();
+        $competitionData = Competition::whereIn('id', [4])->first();
 
         if (!$competitionData) {
             dd('Competition not found');
         }
 
-        $clubs = Club::whereIn('competition_id', [4, 3])->get();
-
+        $clubs = Club::whereIn('competition_id', [4])->get();
 
         // Check if there are at least two clubs
         if (!$clubs || $clubs->count() < 2) {
@@ -61,10 +60,12 @@ class FootballMatchFactory extends Factory
             'result' => json_encode($result, JSON_UNESCAPED_SLASHES),
             'date_time' => $futureDateTime->format('Y-m-d H:i:s'),
             'competition_name' => $competitionData->name_of_competition,
+            'seat'=> 0,
             'emblem_home' => $clubs->firstWhere('name', $randomClubs[0])->crest,
             'emblem_away' => $clubs->firstWhere('name', $randomClubs[1])->crest,
-            'competition_id' => 4,
+            'competition_id' => 4
         ];
+        
     }
 
 

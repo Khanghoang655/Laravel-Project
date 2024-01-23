@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\FootballMatch;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Seat_rows;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -23,15 +25,80 @@ class DashboardController extends Controller
                     $orderItems[] = $orderItem->match_id;
                 }
             }
-            $match = FootballMatch::where('id', $orderItems)->get();
+
+            $matches = FootballMatch::whereIn('id', $orderItems)->get();
+            $matchJson = [];
+            foreach ($matches as $footballMatch) {
+                $match = [
+                    'name' => $footballMatch->home_team . ' - ' . $footballMatch->away_team,
+                    'date' => $footballMatch->date_time
+                ];
+                // $match['name'] =   ;
+                // $match['date'] = ;
+                $matchJson[] = $match;
+            }
             return view('admin.dashboard.guest_dashboard')->with([
                 'orders' => $orders,
-                'match' => $match,
+                'matchJson' => $matchJson,
+                'matches' => $matches,
             ]);
         }
 
     }
+    public function orderGuest(Request $request, $id)
+    {
+        $action = $request->input('action');
+        $order = Order::where('id', $id)->first();
+        $orderItem = OrderItem::where('order_id', $order->id)->first();
+        $match = FootballMatch::where('id', $orderItem->match_id)->first();
+        $currentTime = date('Y-m-d H:i:s');
+        $matchTimeMinus30Minutes = date('Y-m-d H:i:s', strtotime($match->date_time . ' - 30 minutes'));
+        $matchTimeMinus60Minutes = date('Y-m-d H:i:s', strtotime($match->date_time . ' - 60 minutes'));
+        $orderCreatedAt = $order->created_at;
+        $orderCreatedAtVN = $orderCreatedAt->setTimezone('Asia/Ho_Chi_Minh');
+        $orderCreatedAtVN = Carbon::parse($order->created_at)->setTimezone('Asia/Ho_Chi_Minh');
+        if ($action == 'cancel-order' && $order->status = 'success') {
+            if ($orderCreatedAtVN > $matchTimeMinus30Minutes) {
+                return view('admin.dashboard.guest_dashboard')->with('msg', "You can not cancel the order after 30 minutes");
+            } else {
+                $seatRow = Seat_rows::where('match_id', $match->id)->get();
+                $newSeatAvai = [];
+                foreach ($seatRow as $row) {
+                    $seatAvai = json_decode($row->seat_name)->available;
+                    $seatNames = explode(',', $order->seat_name);
 
+                    // Loại bỏ khoảng trắng ở đầu và cuối mỗi giá trị
+                    $seatNames = array_map('trim', $seatNames);
+                    $newSeatAvai = array_merge($seatAvai, $seatNames);
+                    usort($newSeatAvai, function ($a, $b) {
+                        preg_match('/([a-zA-Z]+)([0-9]+)/', $a, $matchesA);
+                        preg_match('/([a-zA-Z]+)([0-9]+)/', $b, $matchesB);
+
+                        $alphaA = $matchesA[1];
+                        $numA = intval($matchesA[2]);
+
+                        $alphaB = $matchesB[1];
+                        $numB = intval($matchesB[2]);
+
+                        $alphaComparison = strcmp($alphaA, $alphaB);
+
+                        if ($alphaComparison == 0) {
+                            return $numA - $numB;
+                        }
+
+                        return $alphaComparison;
+                    });
+                    // dd($newSeatAvai);
+                    $row->seat_name = json_encode(['available' => $newSeatAvai]);
+                    $row->save();
+                }
+
+                $order->status = 'cancel';
+                $order->save();
+                return redirect()->route('dashboard.guest')->with('msg', "Done");
+            }
+        }
+    }
     public function indexAdmin()
     {
 

@@ -46,7 +46,7 @@
                 <li><a class="active" href="{{ route('dashboard.guest') }}"><i class="icon-home"></i>Dashboard</a></li>
                 <li><a href="{{ route('home') }}"><i class="icon-database"></i>Home</a>
                 </li>
-                <li><a href="{{ route('admin.update-competition') }}"><i class="icon-bag2"></i>Order</a></li>
+                {{-- <li><a href="{{ route('admin.update-competition') }}"><i class="icon-bag2"></i>Order</a></li> --}}
                 {{-- <li><a href="{{ route('admin.seat.index') }}"><i class="icon-papers"></i>Seat</a></li> --}}
             </ul>
         </div>
@@ -78,7 +78,7 @@
                                         class="icon-home"></i>Dashboard</a></li>
                             <li><a href="{{ route('home') }}"><i class="icon-database"></i>Home</a>
                             </li>
-                            <li><a href="{{ route('admin.update-competition') }}"><i class="icon-bag2"></i>Order</a>
+                            {{-- <li><a href="{{ route('admin.update-competition') }}"><i class="icon-bag2"></i>Order</a> --}}
                             </li>
                             {{-- <li><a href="{{ route('admin.seat.index') }}"><i class="icon-papers"></i>Seat</a></li> --}}
                         </ul>
